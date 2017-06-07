@@ -1,3 +1,6 @@
+///
+///This program is only designed to run on Raspberry Pi
+///
 #include <QCoreApplication>
 #include "anqtdebug.h"
 #include <QDir>
@@ -5,10 +8,7 @@
 #include <QTimer>
 #include <QProcess>
 
-///
-///This program is only designed to run on Raspberry Pi
-///
-
+#define _LinuxCommandBash "/bin/bash"
 #define _TildeDirectory "/home/pi"
 #define _DefaultAutoUpdatePiSGFileName "AutoUpdatePiSG"
 #define _DefaultAutoUpdatePiSGFolderPath _TildeDirectory "/AutoUpdatePiSG"
@@ -34,10 +34,18 @@ int main(int argc, char *argv[])
         }
         if (QFile::copy(currentDir.absoluteFilePath(_DefaultAutoUpdatePiSGFileName), _DefaultAutoUpdatePiSGFilePath))
         {
-            QProcess qproc;
-            qproc.execute("sed -i '/Flipper/d;/AutoUpdatePiSG/d' " _DefaultAutostartFilePath);
-            qproc.execute("sed -i '$a\\@" _DefaultAutoUpdatePiSGFilePath ";$a\\@" _DefaultProgFilePath "' " _DefaultAutostartFilePath);
-            qproc.execute("reboot");
+            QFile tmpBashScript(currentDir.absoluteFilePath("AddExecutablePathsOfTheTwoAutostartPrograms.sh"));
+            if (tmpBashScript.open(QIODevice::WriteOnly | QIODevice::Truncate))
+            {
+                QTextStream writeIntoABashScript(&tmpBashScript);
+                writeIntoABashScript << "#!/bin/bash" << endl;
+                writeIntoABashScript << "sed -i '/Flipper/d;/AutoUpdatePiSG/d' " _DefaultAutostartFilePath << endl;
+                writeIntoABashScript << "sed -i '$a\\@" _DefaultAutoUpdatePiSGFilePath "' " _DefaultAutostartFilePath << endl;
+                writeIntoABashScript << "sed -i '$a\\@" _DefaultProgFilePath "' " _DefaultAutostartFilePath << endl;
+            }
+            tmpBashScript.close();
+            QProcess::execute(_LinuxCommandBash " " + currentDir.absoluteFilePath("AddExecutablePathsOfTheTwoAutostartPrograms.sh"));
+            QProcess::execute("reboot");
         }
         else
         {
