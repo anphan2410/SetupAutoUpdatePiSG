@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
                 QTextStream writeIntoABashScript(&tmpBashScript);
                 writeIntoABashScript << "#!/bin/bash" << endl;
                 writeIntoABashScript << "sed -i '/Flipper/d;/AutoUpdatePiSG/d' " _DefaultAutostartFilePath << endl;
-                writeIntoABashScript << "sed -i '$a\\@" _DefaultAutoUpdatePiSGFilePath "' " _DefaultAutostartFilePath << endl;
                 writeIntoABashScript << "sed -i '$a\\@" _DefaultProgFilePath "' " _DefaultAutostartFilePath << endl;
+                writeIntoABashScript << "sed -i '$a\\@" _DefaultAutoUpdatePiSGFilePath "' " _DefaultAutostartFilePath << endl;
             }
             tmpBashScript.close();
             QProcess::execute(_LinuxCommandBash " " + currentDir.absoluteFilePath("AddExecutablePathsOfTheTwoAutostartPrograms.sh"));
