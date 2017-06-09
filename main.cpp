@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             }
             tmpBashScript.close();
             QProcess::execute(_LinuxCommandBash " " + currentDir.absoluteFilePath("AddExecutablePathsOfTheTwoAutostartPrograms.sh"));
-            QProcess::execute("reboot");
+            QProcess::execute("sudo reboot");
         }
         else
         {
